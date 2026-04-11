@@ -1,46 +1,46 @@
-# Cloud-Based Parcel Tracking System (DPD Ireland Case Study)
+# DPD Ireland Azure Customer Notification Modernization
 
-This project upgrades a DPD Ireland parcel workflow into a cloud-based parcel tracking and notification system for the MBA Cloud Application Management module. It focuses on business value as well as technical design, especially around real-time tracking, scalability, and cloud deployment.
+This project is a prototype for DPD Ireland's future Azure-based customer notification platform. It demonstrates how a legacy on-premise, batch-driven notification service can be modernized into a cloud-native, event-driven architecture for near real-time parcel updates.
 
-## Problem
+## Problem Statement
 
 DPD Ireland faces three connected business and operational challenges:
 
-- Notification delays caused by legacy batch-style processing
-- Poor real-time tracking visibility for receivers and operations staff
-- Scalability pressure during peak parcel volumes such as Black Friday and Christmas
+- Notification lag caused by 30 to 60 minute polling cycles
+- Poor real-time visibility for customers and operations teams
+- Fixed-capacity infrastructure that struggles during peak periods such as Black Friday and Christmas
+- A single point of failure in the Athlone hub
+- Weak secret handling compared with modern cloud security practice
 
 These issues can increase support requests, reduce customer satisfaction, and limit operational responsiveness.
 
 ## Solution
 
-The proposed solution is a cloud-based parcel tracking system with a real-time notification model.
+The proposed solution is an Azure cloud-native, event-driven customer notification platform.
 
-- Parcel events are captured and stored through a Node.js and Express API
-- Status changes automatically update parcel history and notification logs
-- Users can track a parcel using a tracking ID
-- Admin users can update parcel status and location
-- Dashboard analytics provide business visibility into delivery performance
+- Parcel scan events enter through Azure API Management
+- Azure Service Bus buffers events to absorb peak demand
+- Azure Functions process events in near real time
+- Azure Cosmos DB stores parcel state and history
+- Azure Communication Services sends notifications
+- Azure Key Vault secures secrets and credentials
+- Azure Monitor and Application Insights provide operational visibility
 
 ## Features
 
-- Parcel creation for new shipments
-- Parcel tracking by tracking ID
-- Status history for each parcel
-- Notification log for every status update
-- Admin status and location updates
-- Dashboard analytics for:
-  - total parcels
-  - delivered parcels
-  - in-transit parcels
-  - delayed parcels
-  - monthly deliveries
+- Prototype parcel event intake
+- Customer parcel tracking by tracking ID
+- Event history and notification log
+- Operations status update controls
+- Dashboard analytics and service monitoring view
+- Azure architecture explanation built into the demo
 
 ## Tech Stack
 
-- Frontend: React
-- Backend: Node.js and Express
-- Database: MongoDB / MongoDB Atlas
+- Demo frontend: React
+- Demo backend: Node.js and Express
+- Prototype data layer: MongoDB Atlas
+- Target production architecture: Azure API Management, Service Bus, Azure Functions, Cosmos DB, Azure Key Vault, Azure Communication Services, Azure Monitor
 
 ## Architecture
 
@@ -49,7 +49,8 @@ Architecture details are available in [CLOUD_ARCHITECTURE.md](/Users/ajinkyayash
 High-level flow:
 
 ```text
-User -> Frontend -> API -> Database -> Notification Service
+Driver Scan -> Azure API Management -> Azure Service Bus -> Azure Functions
+-> Azure Cosmos DB / Azure Maps / Azure Communication Services -> Azure Monitor
 ```
 
 ## Governance
@@ -137,11 +138,15 @@ https://dpd-parcel-tracking-dashboard.onrender.com/api/health
 
 ## Cloud Benefits
 
-- Scalability: the system can handle growing parcel volume more effectively than an on-premise batch process
-- Real-time processing: status changes can trigger immediate notifications and visibility updates
-- High availability: cloud deployment reduces single points of failure and supports better resilience
+- Event-driven processing removes notification lag
+- Elastic scaling handles busy seasonal periods
+- High availability reduces dependence on a single local hub
+- Managed secrets improve security posture
+- Pay-as-you-go cloud services reduce operational overhead
+- Monitoring and telemetry improve support and troubleshooting
 
 ## Notes
 
-- The current repository contains the working application structure and supporting documentation for the assignment.
+- The current repository contains a working prototype used to demonstrate the target Azure architecture.
+- MongoDB Atlas is used as a prototype persistence layer, while Cosmos DB is the recommended production target in the assignment design.
 - The frontend production build was verified locally with `npm run build`.

@@ -155,26 +155,27 @@ function App() {
     <main className="app-shell">
       <section className="hero-panel">
         <div>
-          <p className="eyebrow">Cloud Application Management Case Study</p>
-          <h1>Parcel Tracking Dashboard</h1>
+          <p className="eyebrow">DPD Ireland Azure Modernization Case Study</p>
+          <h1>Cloud-Native Customer Notification Platform</h1>
           <p className="hero-copy">
-            This prototype upgrades DPD Ireland&apos;s parcel tracking and notification flow
-            from delayed batch processing to a cloud-ready, event-driven shipment model.
+            This prototype demonstrates how DPD Ireland can replace delayed, on-premise
+            polling with an Azure-based, event-driven customer notification service for
+            near real-time parcel updates.
           </p>
         </div>
         <div className="hero-aside">
           <div className="highlight-card">
-            <span className="highlight-label">Business Problem</span>
+            <span className="highlight-label">Current Problem</span>
             <p>
-              Parcel notifications are delayed, tracking visibility is limited, and peak
-              parcel volumes create scalability pressure.
+              Batch polling every 30 to 60 minutes creates notification lag, poor tracking
+              visibility, and service degradation during seasonal volume spikes.
             </p>
           </div>
           <div className="highlight-card">
-            <span className="highlight-label">Cloud Outcome</span>
+            <span className="highlight-label">Azure Outcome</span>
             <p>
-              A real-time parcel tracking system with instant notification events, cleaner
-              visibility, and scalable cloud deployment options.
+              An event-driven Azure platform using API Management, Service Bus, Azure
+              Functions, and Communication Services for resilient real-time updates.
             </p>
           </div>
         </div>
@@ -213,8 +214,8 @@ function App() {
         <article className="panel">
           <div className="panel-header">
             <div>
-              <p className="section-kicker">Create Parcel</p>
-              <h2>Add a new shipment to the system</h2>
+              <p className="section-kicker">Parcel Event Intake</p>
+              <h2>Simulate a parcel entering the event-driven pipeline</h2>
             </div>
           </div>
 
@@ -288,8 +289,8 @@ function App() {
         <article className="panel">
           <div className="panel-header">
             <div>
-              <p className="section-kicker">Track Parcel</p>
-              <h2>Search by tracking ID</h2>
+              <p className="section-kicker">Customer Tracking View</p>
+              <h2>Search by tracking ID for real-time parcel status</h2>
             </div>
           </div>
 
@@ -343,8 +344,8 @@ function App() {
         <article className="panel">
           <div className="panel-header">
             <div>
-              <p className="section-kicker">Admin Updates</p>
-              <h2>Manage live parcel statuses</h2>
+              <p className="section-kicker">Operations Control</p>
+              <h2>Trigger live parcel events and status changes</h2>
             </div>
           </div>
 
@@ -422,8 +423,8 @@ function App() {
         <article className="panel">
           <div className="panel-header">
             <div>
-              <p className="section-kicker">Monthly Deliveries</p>
-              <h2>Simple business analytics</h2>
+              <p className="section-kicker">Operational Monitoring</p>
+              <h2>Delivery analytics and service visibility</h2>
             </div>
           </div>
 
@@ -446,8 +447,8 @@ function App() {
         <article className="panel">
           <div className="panel-header">
             <div>
-              <p className="section-kicker">Notification Log</p>
-              <h2>History of parcel update notifications</h2>
+              <p className="section-kicker">Communication Services Log</p>
+              <h2>History of customer notification events</h2>
             </div>
           </div>
 
@@ -475,32 +476,81 @@ function App() {
         <article className="panel">
           <div className="panel-header">
             <div>
-              <p className="section-kicker">Cloud Flow</p>
-              <h2>Deployment concept</h2>
+              <p className="section-kicker">Azure Event Flow</p>
+              <h2>Target production architecture</h2>
             </div>
           </div>
 
           <div className="architecture-list">
             <div>
               <span>1</span>
-              <p>User or admin submits a parcel event through the React frontend.</p>
+              <p>Parcel scan enters Azure API Management as the secure ingestion gateway.</p>
             </div>
             <div>
               <span>2</span>
-              <p>Node.js and Express process the request and update parcel state.</p>
+              <p>Azure Service Bus buffers events to prevent crashes during peak surges.</p>
             </div>
             <div>
               <span>3</span>
-              <p>MongoDB Atlas stores parcel data, history, and notification records.</p>
+              <p>Azure Functions process events, retrieve secrets from Key Vault, and update state.</p>
             </div>
             <div>
               <span>4</span>
-              <p>A cloud-hosted notification service can send email, SMS, or app alerts.</p>
+              <p>Cosmos DB, Azure Maps, Communication Services, and Azure Monitor complete the workflow.</p>
             </div>
           </div>
 
           <div className="diagram-card">
-            <code>User -&gt; Frontend -&gt; API -&gt; Database -&gt; Notification Service</code>
+            <code>
+              Driver Scan -&gt; API Management -&gt; Service Bus -&gt; Azure Functions -&gt; Cosmos DB /
+              Azure Maps / Communication Services -&gt; Azure Monitor
+            </code>
+          </div>
+        </article>
+      </section>
+
+      <section className="content-grid lower-grid">
+        <article className="panel">
+          <div className="panel-header">
+            <div>
+              <p className="section-kicker">Current State vs Future State</p>
+              <h2>Why DPD Ireland must modernize</h2>
+            </div>
+          </div>
+
+          <div className="architecture-list">
+            <div>
+              <span>1</span>
+              <p>Current state: scheduled polling, fixed servers, single Athlone hub dependency.</p>
+            </div>
+            <div>
+              <span>2</span>
+              <p>Future state: event-driven Azure Functions triggered instantly through Service Bus.</p>
+            </div>
+            <div>
+              <span>3</span>
+              <p>Current state: hardcoded or manually managed secrets and limited observability.</p>
+            </div>
+            <div>
+              <span>4</span>
+              <p>Future state: Key Vault, Application Insights, elasticity, and multi-zone resilience.</p>
+            </div>
+          </div>
+        </article>
+
+        <article className="panel">
+          <div className="panel-header">
+            <div>
+              <p className="section-kicker">Professor Summary</p>
+              <h2>Short explanation of the proposed Azure solution</h2>
+            </div>
+          </div>
+
+          <div className="diagram-card">
+            <code>
+              This prototype shows how DPD Ireland can replace notification lag with an Azure
+              cloud-native, event-driven model that is scalable, secure, and pay-as-you-go.
+            </code>
           </div>
         </article>
       </section>
