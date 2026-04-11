@@ -255,11 +255,19 @@ app.get('/api/summary', async (req, res) => {
   }
 });
 
-const frontendDistPath = path.resolve(__dirname, '../frontend/dist');
-const frontendIndexPath = path.join(frontendDistPath, 'index.html');
+const frontendDistCandidates = [
+  path.resolve(__dirname, 'dist'),
+  path.resolve(__dirname, '../frontend/dist')
+];
 
-if (fs.existsSync(frontendIndexPath)) {
-  app.use(express.static(frontendDistPath));
+const resolvedFrontendDistPath = frontendDistCandidates.find(candidate =>
+  fs.existsSync(path.join(candidate, 'index.html'))
+);
+
+if (resolvedFrontendDistPath) {
+  const frontendIndexPath = path.join(resolvedFrontendDistPath, 'index.html');
+
+  app.use(express.static(resolvedFrontendDistPath));
 
   app.get(/^\/(?!api\/?).*/, (req, res) => {
     res.sendFile(frontendIndexPath);
