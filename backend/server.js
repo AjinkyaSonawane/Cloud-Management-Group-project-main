@@ -38,6 +38,175 @@ const createApiError = (message, details) => ({
   }
 });
 
+const formatUptime = totalSeconds => {
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+
+  return [days ? `${days}d` : null, hours ? `${hours}h` : null, minutes ? `${minutes}m` : null, `${seconds}s`]
+    .filter(Boolean)
+    .join(' ');
+};
+
+const getHealthPayload = () => ({
+  service: 'dpd-parcel-tracking-system',
+  status: 'ok',
+  database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+  environment: process.env.NODE_ENV || 'development',
+  uptime: formatUptime(process.uptime()),
+  timestamp: new Date().toISOString()
+});
+
+const renderHealthPage = health => `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Service Health</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(217, 72, 15, 0.18), transparent 28%),
+          linear-gradient(180deg, #fdf4ec 0%, #f8fbff 48%, #eef5ff 100%);
+        color: #0f172a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .health-shell {
+        width: min(760px, 100%);
+        padding: 32px;
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        box-shadow: 0 24px 50px rgba(15, 23, 42, 0.08);
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #d9480f;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(2rem, 4vw, 3rem);
+      }
+
+      .subcopy {
+        margin: 0 0 24px;
+        color: #475569;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: #ecfdf5;
+        color: #047857;
+        font-weight: 700;
+        margin-bottom: 24px;
+      }
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #10b981;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+      }
+
+      .metric-card {
+        padding: 18px;
+        border-radius: 20px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+      }
+
+      .metric-label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #64748b;
+      }
+
+      .metric-value {
+        font-size: 1.05rem;
+        font-weight: 700;
+        word-break: break-word;
+      }
+
+      .code-block {
+        margin-top: 22px;
+        padding: 18px;
+        border-radius: 18px;
+        background: #0f172a;
+        color: #dbeafe;
+        overflow-x: auto;
+        font-size: 0.92rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="health-shell">
+      <p class="eyebrow">DPD Ireland Azure Modernization Case Study</p>
+      <h1>Service Health</h1>
+      <p class="subcopy">The parcel tracking API is online and responding successfully.</p>
+
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        Status: ${health.status.toUpperCase()}
+      </div>
+
+      <section class="metrics">
+        <article class="metric-card">
+          <span class="metric-label">Service</span>
+          <span class="metric-value">${health.service}</span>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">Database</span>
+          <span class="metric-value">${health.database}</span>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">Environment</span>
+          <span class="metric-value">${health.environment}</span>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">Uptime</span>
+          <span class="metric-value">${health.uptime}</span>
+        </article>
+      </section>
+
+      <pre class="code-block">${JSON.stringify(health, null, 2)}</pre>
+    </main>
+  </body>
+</html>`;
+
 const validateParcelPayload = payload => {
   const errors = [];
 
@@ -61,15 +230,13 @@ const validateParcelPayload = payload => {
 };
 
 app.get('/api/health', (req, res) => {
-  res.json(
-    createApiSuccess(
-      {
-        service: 'dpd-parcel-tracking-system',
-        database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
-      },
-      'Service health retrieved successfully.'
-    )
-  );
+  const health = getHealthPayload();
+
+  if (req.accepts('html') && !req.accepts('json')) {
+    return res.send(renderHealthPage(health));
+  }
+
+  res.json(createApiSuccess(health, 'Service health retrieved successfully.'));
 });
 
 app.get('/api/parcels', async (req, res) => {
