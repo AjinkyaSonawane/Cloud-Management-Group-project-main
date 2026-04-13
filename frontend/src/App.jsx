@@ -5,6 +5,11 @@ import './App.css';
 const API_BASE_URL = (import.meta.env.VITE_API_URL || '').trim();
 const buildApiUrl = path => `${API_BASE_URL}${path}`;
 const STATUS_OPTIONS = ['Created', 'In Transit', 'Out for Delivery', 'Delivered', 'Delayed'];
+const SESSION_STORAGE_KEY = 'dpd-admin-session';
+const DEMO_CREDENTIALS = {
+  email: 'admin@dpdcloud.com',
+  password: 'CloudDemo123'
+};
 
 const initialForm = {
   trackingId: '',
@@ -21,6 +26,18 @@ const getErrorMessage = error =>
   'Something went wrong.';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    return window.localStorage.getItem(SESSION_STORAGE_KEY) === 'active';
+  });
+  const [loginForm, setLoginForm] = useState({
+    email: '',
+    password: ''
+  });
+  const [loginError, setLoginError] = useState('');
   const [parcels, setParcels] = useState([]);
   const [summary, setSummary] = useState({
     totalParcels: 0,
@@ -61,8 +78,51 @@ function App() {
   };
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+
     fetchDashboard();
-  }, []);
+  }, [isAuthenticated]);
+
+  const handleLoginChange = event => {
+    setLoginForm(current => ({
+      ...current,
+      [event.target.name]: event.target.value
+    }));
+  };
+
+  const handleLogin = event => {
+    event.preventDefault();
+
+    const normalizedEmail = loginForm.email.trim().toLowerCase();
+    if (
+      normalizedEmail !== DEMO_CREDENTIALS.email ||
+      loginForm.password !== DEMO_CREDENTIALS.password
+    ) {
+      setLoginError('Use the demo admin credentials shown on the page.');
+      return;
+    }
+
+    window.localStorage.setItem(SESSION_STORAGE_KEY, 'active');
+    setLoginError('');
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    window.localStorage.removeItem(SESSION_STORAGE_KEY);
+    setIsAuthenticated(false);
+    setLoginForm({
+      email: '',
+      password: ''
+    });
+    setTrackedParcel(null);
+    setTrackingSearch('');
+    setSuccessMessage('');
+    setLatestNotificationMessage('');
+    setError('');
+  };
 
   const handleFormChange = event => {
     setFormData(current => ({
@@ -151,8 +211,79 @@ function App() {
 
   const monthlyDeliveries = Object.entries(summary.monthlyDeliveries || {});
 
+  if (!isAuthenticated) {
+    return (
+      <main className="auth-shell">
+        <section className="auth-panel">
+          <div className="auth-hero">
+            <p className="eyebrow">DPD Ireland Azure Modernization Case Study</p>
+            <h1>Sign in to the parcel operations console</h1>
+            <p className="hero-copy">
+              This admin sign-in screen protects the notification dashboard before we wire in a
+              production identity provider.
+            </p>
+            <div className="auth-tip-card">
+              <span className="highlight-label">Demo Access</span>
+              <p>Email: {DEMO_CREDENTIALS.email}</p>
+              <p>Password: {DEMO_CREDENTIALS.password}</p>
+            </div>
+          </div>
+
+          <form className="auth-card" onSubmit={handleLogin}>
+            <div>
+              <p className="section-kicker">Admin Authentication</p>
+              <h2>Continue to the live operations dashboard</h2>
+            </div>
+
+            <label>
+              Work Email
+              <input
+                name="email"
+                type="email"
+                value={loginForm.email}
+                onChange={handleLoginChange}
+                placeholder="admin@dpdcloud.com"
+                autoComplete="username"
+                required
+              />
+            </label>
+
+            <label>
+              Password
+              <input
+                name="password"
+                type="password"
+                value={loginForm.password}
+                onChange={handleLoginChange}
+                placeholder="Enter password"
+                autoComplete="current-password"
+                required
+              />
+            </label>
+
+            {loginError ? <div className="message-banner error">{loginError}</div> : null}
+
+            <button type="submit" className="auth-submit">
+              Sign In
+            </button>
+          </form>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="app-shell">
+      <section className="topbar">
+        <div>
+          <p className="eyebrow">Secure Admin Session</p>
+          <strong>Signed in as {DEMO_CREDENTIALS.email}</strong>
+        </div>
+        <button type="button" className="secondary-button" onClick={handleLogout}>
+          Sign Out
+        </button>
+      </section>
+
       <section className="hero-panel">
         <div>
           <p className="eyebrow">DPD Ireland Azure Modernization Case Study</p>
