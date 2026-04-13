@@ -67,10 +67,11 @@ const renderHealthPage = health => `<!DOCTYPE html>
     <style>
       :root {
         color-scheme: light;
-        font-family: "Segoe UI", Arial, sans-serif;
+        font-family: "Avenir Next", "Segoe UI", Arial, sans-serif;
         background:
-          radial-gradient(circle at top left, rgba(217, 72, 15, 0.18), transparent 28%),
-          linear-gradient(180deg, #fdf4ec 0%, #f8fbff 48%, #eef5ff 100%);
+          radial-gradient(circle at top left, rgba(217, 72, 15, 0.24), transparent 24%),
+          radial-gradient(circle at bottom right, rgba(11, 87, 208, 0.18), transparent 26%),
+          linear-gradient(180deg, #fff4eb 0%, #f8fbff 48%, #edf4ff 100%);
         color: #0f172a;
       }
 
@@ -83,16 +84,43 @@ const renderHealthPage = health => `<!DOCTYPE html>
         min-height: 100vh;
         display: grid;
         place-items: center;
-        padding: 24px;
+        padding: 28px;
       }
 
       .health-shell {
-        width: min(760px, 100%);
-        padding: 32px;
-        border-radius: 28px;
-        background: rgba(255, 255, 255, 0.94);
+        position: relative;
+        width: min(920px, 100%);
+        padding: 34px;
+        border-radius: 32px;
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.92)),
+          rgba(255, 255, 255, 0.94);
         border: 1px solid rgba(15, 23, 42, 0.08);
-        box-shadow: 0 24px 50px rgba(15, 23, 42, 0.08);
+        box-shadow: 0 28px 70px rgba(15, 23, 42, 0.12);
+        overflow: hidden;
+      }
+
+      .health-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(120deg, rgba(217, 72, 15, 0.08), transparent 40%),
+          linear-gradient(300deg, rgba(11, 87, 208, 0.08), transparent 35%);
+        pointer-events: none;
+      }
+
+      .health-shell > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 20px;
+        align-items: start;
+        margin-bottom: 24px;
       }
 
       .eyebrow {
@@ -106,24 +134,26 @@ const renderHealthPage = health => `<!DOCTYPE html>
 
       h1 {
         margin: 0 0 12px;
-        font-size: clamp(2rem, 4vw, 3rem);
+        font-size: clamp(2.3rem, 4vw, 3.4rem);
+        line-height: 1.02;
       }
 
       .subcopy {
         margin: 0 0 24px;
         color: #475569;
+        max-width: 56ch;
       }
 
       .status-pill {
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        padding: 10px 16px;
+        padding: 11px 18px;
         border-radius: 999px;
         background: #ecfdf5;
         color: #047857;
         font-weight: 700;
-        margin-bottom: 24px;
+        box-shadow: inset 0 0 0 1px #a7f3d0;
       }
 
       .status-dot {
@@ -131,6 +161,7 @@ const renderHealthPage = health => `<!DOCTYPE html>
         height: 10px;
         border-radius: 50%;
         background: #10b981;
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.14);
       }
 
       .metrics {
@@ -142,8 +173,9 @@ const renderHealthPage = health => `<!DOCTYPE html>
       .metric-card {
         padding: 18px;
         border-radius: 20px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
+        background: rgba(248, 250, 252, 0.88);
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        backdrop-filter: blur(8px);
       }
 
       .metric-label {
@@ -161,6 +193,58 @@ const renderHealthPage = health => `<!DOCTYPE html>
         word-break: break-word;
       }
 
+      .hero-card {
+        padding: 20px;
+        border-radius: 24px;
+        background: linear-gradient(160deg, #0f172a 0%, #12233f 100%);
+        color: #dbeafe;
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+      }
+
+      .hero-card-label {
+        display: block;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.78rem;
+        color: #93c5fd;
+      }
+
+      .hero-card strong {
+        display: block;
+        font-size: 1.25rem;
+        margin-bottom: 10px;
+      }
+
+      .hero-card p {
+        margin: 0;
+        color: #bfdbfe;
+        line-height: 1.6;
+      }
+
+      .badge-row {
+        margin: 18px 0 24px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .mini-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        color: #334155;
+        font-weight: 600;
+      }
+
+      .mini-badge strong {
+        color: #0f172a;
+      }
+
       .code-block {
         margin-top: 22px;
         padding: 18px;
@@ -170,18 +254,54 @@ const renderHealthPage = health => `<!DOCTYPE html>
         overflow-x: auto;
         font-size: 0.92rem;
       }
+
+      @media (max-width: 780px) {
+        body {
+          padding: 18px;
+        }
+
+        .health-shell {
+          padding: 24px;
+          border-radius: 24px;
+        }
+
+        .hero {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
     <main class="health-shell">
-      <p class="eyebrow">DPD Ireland Azure Modernization Case Study</p>
-      <h1>Service Health</h1>
-      <p class="subcopy">The parcel tracking API is online and responding successfully.</p>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">DPD Ireland Azure Modernization Case Study</p>
+          <h1>Service Health</h1>
+          <p class="subcopy">
+            The parcel tracking API is online, connected, and ready to serve real-time dashboard
+            traffic and operational events.
+          </p>
 
-      <div class="status-pill">
-        <span class="status-dot"></span>
-        Status: ${health.status.toUpperCase()}
-      </div>
+          <div class="status-pill">
+            <span class="status-dot"></span>
+            Status: ${health.status.toUpperCase()}
+          </div>
+
+          <div class="badge-row">
+            <span class="mini-badge">Database: <strong>${health.database}</strong></span>
+            <span class="mini-badge">Environment: <strong>${health.environment}</strong></span>
+          </div>
+        </div>
+
+        <aside class="hero-card">
+          <span class="hero-card-label">Operations Summary</span>
+          <strong>Live service heartbeat</strong>
+          <p>
+            This endpoint confirms that the Express API is up, the database connection is healthy,
+            and the deployment is active on the current environment.
+          </p>
+        </aside>
+      </section>
 
       <section class="metrics">
         <article class="metric-card">
@@ -199,6 +319,10 @@ const renderHealthPage = health => `<!DOCTYPE html>
         <article class="metric-card">
           <span class="metric-label">Uptime</span>
           <span class="metric-value">${health.uptime}</span>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">Timestamp</span>
+          <span class="metric-value">${health.timestamp}</span>
         </article>
       </section>
 
